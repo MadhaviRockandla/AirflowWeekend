@@ -14,7 +14,7 @@ Data Sources that can be used:
 
 Create pipeline to ingest data from some source and go through some type of process of your choice. Use Airflow to manage the running of the project
 
-- ingest from at least two sources
+- ingest from one source
 - clean (add missing data, create a feature or two)
 - process and perform some transformations
 - report (charts, graphs, some kind of output which informs our understanding of the datasets)
