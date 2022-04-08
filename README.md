@@ -20,4 +20,4 @@ Create pipeline to ingest data from some source and go through some type of proc
 - report (charts, graphs, some kind of output which informs our understanding of the datasets)
 - keep it pretty simple, it needs to be done in a day or two.
 
-Take a look into [airflow-proj-src](./airflow-proj-src) to see s super simple, docker-hosted, Airflow project to start with.
+Take a look into `airflow-proj-src` to see s super simple, docker-hosted, Airflow project to start with.
