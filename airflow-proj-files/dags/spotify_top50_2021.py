@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
 from random import randint
+
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash_operator import BashOperator
-from airflow.providers.papermill.operators.papermill import PapermillOperator
+from airflow.operators.papermill_operator import PapermillOperator
 from airflow.operators.python import BranchPythonOperator
 
-## from airflow.operators.bash_operator import BashOperator
+
 ## from airflow.utils.dates import days_ago
 
 ## import pandas as pd
@@ -14,10 +15,6 @@ from airflow.operators.python import BranchPythonOperator
 ## matplotlib.use("Agg")
 def _spotify_top50_2021():
     return randint(1, 10)
-def _choose_best_model():
-    if spotify_top50_2021.best_accuracy > 8:
-        return 'accurate'
-    return 'inaccurate'
 
 
 default_args = {
@@ -35,41 +32,41 @@ with DAG(
         schedule_interval='@daily',
         template_searchpath='/Users/madhavirockandla/AirflowWeekend/airflow-proj-files/',
         catchup=False) as dag:
-    notebook_task = PapermillOperator(
-        task_id="run_spotify_top50_2021.ipynb",
-        input_nb="airflow-proj-files/spotify_top50_2021.ipynb",
-        output_nb="airflow-proj-files/out-{{ execution_date }}.ipynb",
+    run_this = PapermillOperator(
+        task_id="run_spotify_top50_2021",
+        input_nb="/airflow-proj-files/spotify_top50_2021.ipynb",
+        output_nb="/airflow-proj-files/out-{{ execution_date }}.ipynb",
         parameters={"execution_date": "{{ execution_date }}"},
     )
 
-# with DAG(
-#          dag_id="spotify_top50_2021",
-#          default_args=default_args,
-#          start_date=datetime(2022, 4, 10),
-#          schedule_intervel="@daily",
-#          catchup=False) as dag:
-#     spotify_top50_2021 = PythonOperator(
-#         task_id="spotify_top50_2021",
-#         python_callable=_spotify_top50_2021
-#     )
-#     choose_best_model = BranchPythonOperator(
-#         task_id="choose_best_model",
-#         python_callable=_spotify_top50_2021
-#     )
-#
-#     accurate = BashOperator(
-#         task_id="accurate",
-#         bash_command="echo 'accurate'"
-#     )
-#
-#     inaccurate = BashOperator(
-#         task_id="inaccurate",
-#         bash_command="echo 'inaccurate'"
-#     )
+with DAG(
+        dag_id="spotify_top50_2021",
+        default_args=default_args,
+        start_date=datetime(2022, 4, 10),
+        schedule_interval='0 0 * * *',
+        template_searchpath='/Users/madhavirockandla/AirflowWeekend/airflow-proj-files/',
+        catchup=False) as dag:
+    spotify_top50_2021 = PythonOperator(
+        task_id="spotify_top50_2021",
+        python_callable=_spotify_top50_2021
+    )
+    choose_best_model = BranchPythonOperator(
+        task_id="choose_best_model",
+        python_callable=_spotify_top50_2021
+    )
 
+    accurate = BashOperator(
+        task_id="accurate",
+        bash_command="echo 'accurate'"
+    )
 
-## def import_raw_data():
- ##   # Imports raw data and returns a DataFrame
- ##   raw_data = pd.read_csv(
-  ##      '/Users/madhavirockandla/AirflowWeekend/airflow-proj-files/data/spotify_top50_2021.csv')
-  ##  pd.DataFrame(raw_data)
+    inaccurate = BashOperator(
+        task_id="inaccurate",
+        bash_command="echo 'inaccurate'"
+    )
+
+# def import_raw_data():
+#   # Imports raw data and returns a DataFrame
+#   raw_data = pd.read_csv(
+#      '/Users/madhavirockandla/AirflowWeekend/airflow-proj-files/data/spotify_top50_2021.csv')
+#  pd.DataFrame(raw_data)
